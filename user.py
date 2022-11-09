@@ -1,14 +1,12 @@
 class User:
-    def __init__(self, user_id, user_email, user_password, history, admin):
+    def __init__(self, user_id: str, email: str, password: str, history: list, admin: bool):
         self.user_id = user_id
-        self.user_email = user_email
-        self.user_password = user_password
+        self.email = email
+        self.password = password
         self.history = history
         self.admin = admin
 
-
-USERS = {'admin@admin': User(1, 'admin@admin', 'adminadmin', [], True)}
-
-
+    def __repr__(self) -> str:
+        return f'<{self.user_id}:{self.email}:{self.password}:{self.admin}>'
 
 
