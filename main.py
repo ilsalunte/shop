@@ -1,8 +1,10 @@
-from user import User
 from decimal import Decimal
-from shop.warehouse import Warehouse
+from typing import NamedTuple
+from basket import Basket
+from shop.user import User, UserWithoutPassword
+from shop.users_handling import UsersHandling, WrongCredential
+from warehouse import Warehouse
 
-USERS = {'admin@admin': User(1, 'admin@admin', 'adminadmin', [], True)}
 ACTIONS_ADMIN = '0 - wyjdź\n' \
                 '1 - wyświetl wszystkie dostępne produkty\n' \
                 '2 - wyszukaj produkt\n' \
@@ -22,32 +24,35 @@ ACTIONS_USER = '0 - wyjdź' \
                '4 - usuń towar z koszyka\n' \
                '5 - zmień ilość towarów w koszyku\n' \
                '6 - sfinalizuj zamówienie\n' \
-               '7 - zmiana hasła' \
+               '7 - zmiana hasła'
 
 
+class NewProduct(NamedTuple):
+    name: str
+    prize: Decimal
+    amount: int
 
-def log_in() -> str:
+
+def login(users_handling: UsersHandling) -> str:
+
     while True:
         print('Zaloguj się do sklepu.')
         email = input('Podaj adres email:')
         password = input('Podaj hasło:')
         try:
-            USERS[email]
-        except KeyError:
+            users_handling.login(email, password)
+            break
+        except WrongCredential():
             print('Podano nieprawidłowe dane logowania.')
             continue
-
-        if not password == USERS[email].user_password:
-            print('Podano nieprawidłowe dane logowania.')
-            continue
-        break
     return email
 
 
-def choose_action(email: str) -> str:
+def choose_action(verification: UserWithoutPassword) -> str:
+
     print('Jaką akcję chcesz wykonać?')
 
-    if not USERS[email].admin:
+    if not verification.is_admin:
         action = input(ACTIONS_USER)
         return action
 
@@ -65,35 +70,86 @@ def define_product() -> tuple[str, Decimal, int]:
     print('Podaj ilość produktu.')
     amount = int(input())
 
-    return name, prize, amount
+    return NewProduct(name=name, prize=prize, amount=amount)
 
 
-def do_actions(action: str, email: str) -> None:
-    operation = Warehouse()
-    if action == '0':
-        pass
-    elif action == '1':
-        get_all_products = operation.get_products_list()
+def get_product_id() -> str:
+    print('Podaj ID produktu.')
+    product_id = input()
+    return product_id
+
+
+def do_actions(
+        action: str, email: str, verification: UserWithoutPassword,
+        warehouse_operation: Warehouse, user_handling: UsersHandling) -> None:
+
+    if action == '1':
+        get_all_products = warehouse_operation.get_products_list()
         print('\n'.join(f'{product.product_id}: {product.name}' for product in get_all_products))
+
     elif action == '2':
         print('Podaj ID produktu.')
         product_id = input()
-        get_one_product = operation.get_single_product(product_id)
-        print(f'{get_one_product.product_id} : {get_one_product.name}, '
-              f'{get_one_product.prize}zł, {get_one_product.amount} sztuk')
+        product = warehouse_operation.get_single_product(product_id)
+        print(f'{product.product_id} : {product.name}, '
+              f'cena: {product.prize}zł, ilość: {product.amount} sztuk')
+
     elif action == '3':
-        if USERS[email].admin:
+        if verification.is_admin:
             choice = define_product()
-            operation.add_product(name=choice[0], prize=choice[1], amount=choice[2])
-    # elif action == '4':
-    #     if USERS[email].admin:
+            warehouse_operation.add_product(name=choice.name, prize=choice.prize, amount=choice.amount)
+        # else:
+        #     print('Podaj ID produktu.')
+        #     product_id = input()
+        #     print('Podaj ilość danego produktu.')
+        #     amount = input()
+        #
+        #     basket_operation.add_product(product_id=product_id, amount=amount)
+
+    elif action == '4':
+        if verification.is_admin:
+            product_id = get_product_id()
+            warehouse_operation.delete_product(product_id=product_id)
+
+    elif action == '5':
+        if verification.is_admin:
+            product_id = get_product_id()
+            print('Podaj nową ilość produktu.')
+            new_amount = int(input())
+            warehouse_operation.change_product_amount(product_id=product_id, new_amount=new_amount)
+
+    elif action == '6':
+        if verification.is_admin:
+            product_id = get_product_id()
+            print('Podaj nową cenę produktu.')
+            new_prize = Decimal(input())
+            warehouse_operation.change_product_prize(product_id=product_id, new_prize=new_prize)
+
+    elif action == '7':
+        if verification.is_admin:
+            print('Podaj nazwę użytkownika.')
+            email = input()
+            print('Podaj nowe hasło.')
+            new_password = input()
+            user_handling.change_password(email=email, new_password=new_password)
+
 
 
 def main() -> None:
-    email = log_in()
+    user_handling = UsersHandling()
+    email = login(users_handling=user_handling)
+    warehouse_operation = Warehouse()
     while True:
-        action = choose_action(email)
-        do_actions(action, email)
+        user_verification = user_handling.get_single_user(email)
+        action = choose_action(verification=user_verification)
+        if action == '0':
+            print('Dziękujemy za odwiedzenie naszego sklepu.')
+            break
+        do_actions(action=action, email=email, verification=user_verification,
+                   warehouse_operation=warehouse_operation, user_handling=user_handling)
+
+
+
 
 # elif action == '4':
 #     if USERS[email].admin == 'N':
@@ -127,3 +183,4 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+

@@ -1,63 +1,67 @@
-from typing import NamedTuple
-from shop.user import User
+from user import User, UserWithoutPassword
 
 
 class UserIdNotFound(Exception):
     pass
 
 
-class UserName(NamedTuple):
-    user_id: str
-    email: str
+class WrongCredential(Exception):
+    pass
 
 
 class UsersHandling:
     def __init__(self):
         self._users: dict[str, User] = {}
         self._counter = 0
-        self.add_user(email='admin@admin', password='adminadmin', admin=True)
+        self.add_user(email='admin@admin', password='adminadmin', is_admin=True)
+        self.add_user(email='user@user', password='useruser')
 
-    def add_user(self, email: str, password: str, admin: bool = False, history: list = []) -> str:
-        user_id = str(self._counter).zfill(4)
+    def add_user(self, email: str, password: str, is_admin: bool = False, history: list = None) -> str:
 
         user = User(
-            user_id=user_id,
             email=email,
             password=password,
-            admin=admin,
+            is_admin=is_admin,
             history=history
         )
 
-        self._users[user_id] = user
+        self._users[email] = user
 
-        self._counter += 1
-        return user_id
+        return email
 
-    def delete_user(self, user_id: str) -> None:
+    def delete_user(self, email: str) -> None:
         try:
-            del self._users[user_id]
+            del self._users[email]
         except KeyError:
             raise UserIdNotFound from None
 
-    def change_password(self, user_id: str, new_password: str) -> None:
+    def change_password(self, email: str, new_password: str) -> None:
         try:
-            self._users[user_id].password = new_password
+            self._users[email].password = new_password
         except KeyError:
             raise UserIdNotFound from None
 
-    def get_single_user(self, user_id):
+    def get_single_user(self, email) -> UserWithoutPassword:
         try:
-            return self._users[user_id]
+            return self._users[email].get_user_without_password()
         except KeyError:
             raise UserIdNotFound from None
 
-    def get_users_list(self):
+    def get_users_list(self) -> list[str]: # todo do poprawy
         return [
-            UserName(user_id=item.user_id, email=item.email)
-            for item in self._users.values()
+            item for item in self._users()
         ]
+
+    def login(self, email, password) -> None:
+        if email not in self._users:
+            raise WrongCredential()
+        if not password == self._users[email].password:
+            raise WrongCredential()
 
 
 if __name__ == '__main__':
     test = UsersHandling()
-    print(test.get_single_user('0000'))
+    print(test.get_single_user('0001'))
+
+
+pass

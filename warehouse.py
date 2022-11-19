@@ -67,18 +67,20 @@ class Warehouse:
 
 if __name__ == '__main__':
     test = Warehouse()
-    added = test.add_product(name='czarnuszka', prize=Decimal('5.0'), amount=15)
-    test.delete_product(product_id='001')
-    added_2 = test.add_product(name='oregano', prize=Decimal('3.0'), amount=32)
-    test.change_product_prize(product_id='002', new_prize=Decimal('66.0'))
-    getting = test.get_products_list()
-    print('\n'.join(f'{hhh.product_id}: {hhh.name}' for hhh in getting))
-
-    print(f'{ProductName.product_id}: {ProductName.name}')
-    getting_single = test.get_single_product('002')
-    print(getting_single)
-    print(f'{getting_single.product_id} : {getting_single.name}, '
-          f'{getting_single.prize}zł, {getting_single.amount} sztuk')
+    test.add_product(name='czarnuszka', prize=Decimal('5.0'), amount=15)
+    print(test.get_products_list())
+    # test.delete_product(product_id='001')
+    # added_2 = test.add_product(name='oregano', prize=Decimal('3.0'), amount=32)
+    # test.change_product_prize(product_id='002', new_prize=Decimal('66.0'))
+    # getting = test.get_products_list()
+    # print('\n'.join(f'{hhh.product_id}: {hhh.name}' for hhh in getting))
+    #
+    # print(f'{ProductName.product_id}: {ProductName.name}')
+    # getting_single = test.get_single_product('002')
+    # print('moja')
+    # print(getting_single)
+    # print(f'{getting_single.product_id} : {getting_single.name}, '
+    #       f'{getting_single.prize}zł, {getting_single.amount} sztuk')
 
     pass
 
