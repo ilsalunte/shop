@@ -1,5 +1,14 @@
+from typing import NamedTuple
+
+
+class HistoryItem(NamedTuple):
+    product_id: str
+    product_name: str
+    amount: int
+
+
 class UserWithoutPassword:
-    def __init__(self, email: str, history: list, is_admin: bool):
+    def __init__(self, email: str, history: list[HistoryItem], is_admin: bool):
         self.email = email
         self.history = history
         self.is_admin = is_admin

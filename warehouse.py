@@ -16,16 +16,16 @@ class Warehouse:
     def __init__(self):
         self._products: dict[str, Product] = {}
         self._counter = 0
-        self.add_product(name='pieprz', prize=Decimal('1.3'), amount=35)
-        self.add_product(name='papryka ostra', prize=Decimal('1.5'), amount=40)
+        self.add_product(name='siodło', price=Decimal('2500'), amount=12)
+        self.add_product(name='czaprak czerwony', price=Decimal('65'), amount=40)
 
-    def add_product(self, name: str, prize: Decimal, amount: int = 0) -> str:
+    def add_product(self, name: str, price: Decimal, amount: int = 0) -> str:
         product_id = str(self._counter).zfill(3)
 
         product = Product(
             product_id=product_id,
             name=name,
-            prize=prize,
+            price=price,
             amount=amount
         )
 
@@ -40,9 +40,9 @@ class Warehouse:
         except KeyError:
             raise ProductIdNotFound from None
 
-    def change_product_prize(self, product_id: str, new_prize: Decimal) -> None:
+    def change_product_price(self, product_id: str, new_price: Decimal) -> None:
         try:
-            self._products[product_id].prize = new_prize
+            self._products[product_id].price = new_price
         except KeyError:
             raise ProductIdNotFound from None
 
@@ -67,11 +67,11 @@ class Warehouse:
 
 if __name__ == '__main__':
     test = Warehouse()
-    test.add_product(name='czarnuszka', prize=Decimal('5.0'), amount=15)
+    test.add_product(name='czarnuszka', price=Decimal('5.0'), amount=15)
     print(test.get_products_list())
     # test.delete_product(product_id='001')
-    # added_2 = test.add_product(name='oregano', prize=Decimal('3.0'), amount=32)
-    # test.change_product_prize(product_id='002', new_prize=Decimal('66.0'))
+    # added_2 = test.add_product(name='oregano', price=Decimal('3.0'), amount=32)
+    # test.change_product_price(product_id='002', new_price=Decimal('66.0'))
     # getting = test.get_products_list()
     # print('\n'.join(f'{hhh.product_id}: {hhh.name}' for hhh in getting))
     #
@@ -80,7 +80,8 @@ if __name__ == '__main__':
     # print('moja')
     # print(getting_single)
     # print(f'{getting_single.product_id} : {getting_single.name}, '
-    #       f'{getting_single.prize}zł, {getting_single.amount} sztuk')
+    #       f'{getting_single.price}zł, {getting_sing
+    #       le.amount} sztuk')
 
     pass
 
