@@ -18,7 +18,9 @@ class UsersHandling:
         self.add_user(email='admin@admin', password='adminadmin', is_admin=True)
         self.add_user(email='user@user', password='useruser')
 
-    def add_user(self, email: str, password: str, is_admin: bool = False, history: Optional[list[HistoryItem]] = None) -> str:
+    def add_user(
+            self, email: str, password: str, is_admin: bool = False, history: Optional[list[HistoryItem]] = None
+    ) -> str:
 
         user = User(
             email=email,
@@ -46,7 +48,7 @@ class UsersHandling:
         try:
             return self._users[email].get_user_without_password()
         except KeyError:
-            raise UserIdNotFound from None
+            raise UserIdNotFound('Nie znaleziono podanego użytkownika.') from None
 
     def get_users_list(self) -> list[UserWithoutPassword]:
         return [
@@ -65,8 +67,12 @@ class UsersHandling:
         except KeyError:
             raise UserIdNotFound from None
 
+    def check_user_existence(self, email: str) -> bool:
+        return email in self._users
+
 
 if __name__ == '__main__':
     test = UsersHandling()
     lista = test.get_users_list()
     print(test.get_users_list())
+    print(dir(UsersHandling))

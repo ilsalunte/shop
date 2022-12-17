@@ -19,10 +19,9 @@ class Basket:
     def clear(self) -> None:
         self._chosen_products.clear()
 
+    def check_product_existence(self, product_id: str) -> bool:
+        return product_id in self._chosen_products
+
 
 if __name__ == '__main__':
-    test = Basket()
-    lista = test.finalize
-    print(lista)
-
-pass
+    pass

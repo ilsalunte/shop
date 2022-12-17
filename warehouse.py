@@ -18,6 +18,7 @@ class Warehouse:
         self._counter = 0
         self.add_product(name='siodło', price=Decimal('2500'), amount=12)
         self.add_product(name='czaprak czerwony', price=Decimal('65'), amount=40)
+        self.add_product(name='ostrogi', price=Decimal(45), amount=37)
 
     def add_product(self, name: str, price: Decimal, amount: int = 0) -> str:
         product_id = str(self._counter).zfill(3)
@@ -35,28 +36,16 @@ class Warehouse:
         return product_id
 
     def delete_product(self, product_id: str) -> None:
-        try:
-            del self._products[product_id]
-        except KeyError:
-            raise ProductIdNotFound from None
+        del self._products[product_id]
 
     def change_product_price(self, product_id: str, new_price: Decimal) -> None:
-        try:
-            self._products[product_id].price = new_price
-        except KeyError:
-            raise ProductIdNotFound from None
+        self._products[product_id].price = new_price
 
     def change_product_amount(self, product_id: str, new_amount: int) -> None:
-        try:
-            self._products[product_id].amount = new_amount
-        except KeyError:
-            raise ProductIdNotFound from None
+        self._products[product_id].amount = new_amount
 
     def get_single_product(self, product_id: str) -> Product:
-        try:
-            return self._products[product_id]
-        except KeyError:
-            raise ProductIdNotFound from None
+        return self._products[product_id]
 
     def get_products_list(self) -> list[ProductName]:
         return [
@@ -64,26 +53,18 @@ class Warehouse:
             for item in self._products.values()
         ]
 
+    def check_product_existence(self, product_id: str) -> bool:
+        return product_id in self._products
+
+    def check_product_existence_name(self, name: str) -> bool:
+        for product in self._products.values():
+            if product.name == name:
+                return True
+        return False
+
+    def get_amount(self, product_id: str) -> int:
+        return self._products[product_id].amount
+
 
 if __name__ == '__main__':
-    test = Warehouse()
-    test.add_product(name='czarnuszka', price=Decimal('5.0'), amount=15)
-    print(test.get_products_list())
-    # test.delete_product(product_id='001')
-    # added_2 = test.add_product(name='oregano', price=Decimal('3.0'), amount=32)
-    # test.change_product_price(product_id='002', new_price=Decimal('66.0'))
-    # getting = test.get_products_list()
-    # print('\n'.join(f'{hhh.product_id}: {hhh.name}' for hhh in getting))
-    #
-    # print(f'{ProductName.product_id}: {ProductName.name}')
-    # getting_single = test.get_single_product('002')
-    # print('moja')
-    # print(getting_single)
-    # print(f'{getting_single.product_id} : {getting_single.name}, '
-    #       f'{getting_single.price}zł, {getting_sing
-    #       le.amount} sztuk')
-
     pass
-
-
-

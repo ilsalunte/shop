@@ -10,5 +10,3 @@ class Product:
 
     def __repr__(self) -> str:
         return f'<{self.product_id}:{self.name}:{self.amount}:{self.price}>'
-
-    # todo: zrobić metodę do wyświetlania ceny z dwoma miejscami po przecinku
